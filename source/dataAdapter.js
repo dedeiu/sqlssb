@@ -18,7 +18,7 @@ module.exports = class DataAdapter {
       server,
       userName: user,
       password,
-      options: Object.assign(options, {encrypt, database, ...driverSettings})
+      options: Object.assign(options || {}, {encrypt, database, ...driverSettings})
     })
 
     return new Promise((resolve, reject) => {
