@@ -11,8 +11,6 @@ module.exports = class DataAdapter {
   }
 
   _connect () {
-    const { server, user, password, database, encrypt = false } = this._config
-
     const { server, user, password, database, options, encrypt = false } = this._config
     const connection = new Connection({
       server,
