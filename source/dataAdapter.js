@@ -14,9 +14,14 @@ module.exports = class DataAdapter {
     const { server, user, password, database, options, encrypt = false } = this._config
     const connection = new Connection({
       server,
-      userName: user,
-      password,
-      options: Object.assign(options || {}, {encrypt, database, ...driverSettings})
+      options: Object.assign(options || {}, {encrypt, database, ...driverSettings}),
+      authentication: {
+        type: "default",
+        options: {
+          userName: user,
+          password: password,
+        }
+      }
     })
 
     return new Promise((resolve, reject) => {
@@ -28,6 +33,7 @@ module.exports = class DataAdapter {
 
         resolve(connection)
       })
+      connection.connect();
     })
   }
 
@@ -44,12 +50,12 @@ module.exports = class DataAdapter {
 
     const { queue } = this._config
 
-    const query = `WAITFOR (  
+    const query = `WAITFOR (
       RECEIVE TOP (@count)
         conversation_group_id,
         conversation_handle,
         message_sequence_number,
-        message_body, 
+        message_body,
         message_type_id,
         message_type_name,
         priority,
@@ -60,7 +66,7 @@ module.exports = class DataAdapter {
         service_name,
         status,
         validation
-      FROM [${queue}]  
+      FROM [${queue}]
     ), TIMEOUT @timeout`
 
     return new Promise((resolve, reject) => {
